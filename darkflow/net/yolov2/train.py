@@ -96,8 +96,8 @@ def loss(self, net_out):
     true_right = true_x + tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles))) + tf.multiply(true_h, tf.math.sin(true_angles))
     true_up = true_y - tf.multiply(true_h, tf.math.sin(true_angles)) - tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles)))
     true_down = true_y + tf.multiply(true_h, tf.math.sin(true_angles)) + tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles)))
-    true_width = tf.maximum(0, true_right - true_left)
-    true_height = tf.maximum(0, true_down - true_up)
+    true_width = tf.maximum(0.0, true_right - true_left)
+    true_height = tf.maximum(0.0, true_down - true_up)
     true_areas = tf.multiply(true_width, true_height)
 
     # calculate the intersection areas
