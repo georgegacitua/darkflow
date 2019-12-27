@@ -87,8 +87,8 @@ def loss(self, net_out):
     #floor = centers - (wh * .5)
     #ceil  = centers + (wh * .5)
     #True Area
-    true_w = tf.pow(_coord[:, :, :, 2], 2) * np.reshape([W, H], [1, 1, 1, 1])
-    true_h = tf.pow(_coord[:, :, :, 3], 2) * np.reshape([W, H], [1, 1, 1, 1])
+    true_w = tf.pow(_coord[:, :, :, 2], 2) * np.reshape([W], [1, 1, 1, 1])
+    true_h = tf.pow(_coord[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1])
     true_x = _coord[:, :, :, 0]
     true_y = _coord[:, :, :, 1]
     true_angles = tf.math.acos(_coord[:, :, :, 4])
