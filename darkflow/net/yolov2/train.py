@@ -71,8 +71,8 @@ def loss(self, net_out):
     adjusted_net_out = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_coords_angle, adjusted_c, adjusted_prob], 3)
 
     #Area
-    pred_w = tf.pow(coords[:,:,:,2], 2) * np.reshape([W, H], [1, 1, 1, 1])
-    pred_h = tf.pow(coords[:, :, :, 3], 2) * np.reshape([W, H], [1, 1, 1, 1])
+    pred_w = tf.pow(coords[:,:,:,2], 2) * np.reshape([W], [1, 1, 1, 1])
+    pred_h = tf.pow(coords[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1])
     #area_pred = wh[:,:,:,0] * wh[:,:,:,1]
     pred_x = coords[:,:,:,0]
     pred_y = coords[:,:,:,1]
