@@ -126,6 +126,7 @@ def loss(self, net_out):
     proid = sprob * weight_pro
 
     self.fetch += [_probs, confs, conid, cooid, proid]
+    confs = tf.reshape(confs, [-1, H*W, B])
     true = tf.concat([_coord, tf.expand_dims(confs, 3), _probs ], 3)
     wght = tf.concat([cooid, tf.expand_dims(conid, 3), proid ], 3)
 
