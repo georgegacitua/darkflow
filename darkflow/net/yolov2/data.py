@@ -53,6 +53,7 @@ def _batch(self, chunk):
     proid = np.zeros([H*W,B,C])
     prear = np.zeros([H*W,4])
     for obj in allobj:
+        print('object:', obj)
         probs[obj[5], :, :] = [[0.]*C] * B
         probs[obj[5], :, labels.index(obj[0])] = 1.
         proid[obj[5], :, :] = [[1.]*C] * B

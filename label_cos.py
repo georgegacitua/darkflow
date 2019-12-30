@@ -73,6 +73,7 @@ for filename in glob.glob(path_1):
         ymax.text = str(y_max)
         ang = ET.SubElement(bndbox, 'angle')
         ang.text = str(angle)
+        print(only_name)
 
 
     xmltext = ET.tostring(annotation, encoding='unicode')
