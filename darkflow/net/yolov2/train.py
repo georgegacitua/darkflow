@@ -118,10 +118,10 @@ def loss(self, net_out):
     best_box = tf.to_float(best_box)
     confs = tf.multiply(best_box, _confs)
 
-    print(tf.shape("iou:", iou))
-    print(tf.shape("intersect:", intersect))
-    print(tf.shape("true areas", true_areas))
-    print(tf.shape("predicted areas", pred_areas))
+    print("iou:", tf.shape(iou))
+    print("intersect:", tf.shape(intersect))
+    print("true areas", tf.shape(true_areas))
+    print("predicted areas", tf.shape(pred_areas))
 
     # take care of the weight terms
     conid = snoob * (1. - confs) + sconf * confs
