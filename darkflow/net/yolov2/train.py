@@ -131,6 +131,7 @@ def loss(self, net_out):
     confs = tf.reshape(confs, [-1, H*W, B])
     true = tf.concat([_coord, tf.expand_dims(confs, 3), _probs ], 3)
     wght = tf.concat([cooid, tf.expand_dims(conid, 4), proid ], 2)
+    wght = tf.reshape(wght, [-1, H*W, B, 3])
 
     print('Building {} loss'.format(m['model']))
     loss = tf.pow(adjusted_net_out - true, 2)
