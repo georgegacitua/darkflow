@@ -20,7 +20,7 @@ def pascal_voc_clean_xml(ANN, pick, exclusive = False):
     os.chdir(ANN)
     annotations = os.listdir('.')
     print(annotations)
-    annotations = glob.glob(str(annotations)+'*.xml')
+    #annotations = glob.glob(str(annotations)+'*.xml')
     size = len(annotations)
 
     for i, file in enumerate(annotations):
