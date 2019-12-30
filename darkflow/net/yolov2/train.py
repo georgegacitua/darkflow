@@ -122,6 +122,7 @@ def loss(self, net_out):
     print("intersect:", tf.shape(intersect))
     print("true areas", tf.shape(true_areas))
     print("predicted areas", tf.shape(pred_areas))
+    print("_confs:", tf.shape(_confs))
 
     # take care of the weight terms
     conid = snoob * (1. - confs) + sconf * confs
