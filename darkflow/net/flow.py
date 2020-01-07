@@ -90,14 +90,15 @@ def return_predict(self, im):
         if tmpBox is None:
             continue
         boxesInfo.append({
-            "label": tmpBox[4],
-            "confidence": tmpBox[6],
-            "topleft": {
+            "label": tmpBox[5],
+            "confidence": tmpBox[7],
+            "center": {
                 "x": tmpBox[0],
-                "y": tmpBox[2]},
-            "bottomright": {
-                "x": tmpBox[1],
-                "y": tmpBox[3]}
+                "y": tmpBox[1]},
+            "axes": {
+                "w": tmpBox[2],
+                "h": tmpBox[3]},
+            "angle": tmpBox[4]
         })
     return boxesInfo
 
