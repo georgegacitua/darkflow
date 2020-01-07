@@ -54,6 +54,7 @@ def loss(self, net_out):
     }
 
     # Extract the coordinate prediction from net.out
+    print(net_out.s)
     net_out_reshape = tf.reshape(net_out, [-1, H, W, B, (5 + 1 + C)])
     coords = net_out_reshape[:, :, :, :, :5]
     coords = tf.reshape(coords, [-1, H*W, B, 5])
