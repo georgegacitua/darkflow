@@ -19,7 +19,7 @@ def _save_ckpt(self, step, loss_profile):
     model = self.meta['name']
 
     profile = file.format(model, step, '.profile')
-    profile = os.path.join(self.FLAGS.backup, profile)
+    profile = os.path.join('/content/gdrive/My Drive/Rocky-YOLO/ckpt', profile)
     with open(profile, 'wb') as profile_ckpt: 
         pickle.dump(loss_profile, profile_ckpt)
 
