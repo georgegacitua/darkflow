@@ -82,13 +82,16 @@ def return_predict(self, im):
     feed_dict = {self.inp : this_inp}
 
     out = self.sess.run(self.out, feed_dict)[0]
-    print(out)
     print(out.shape)
     boxes = self.framework.findboxes(out)
+    print(boxes)
     threshold = self.FLAGS.threshold
     boxesInfo = list()
     for box in boxes:
         tmpBox = self.framework.process_box(box, h, w, threshold)
+        print(tmpBox)
+        print(box)
+        input()
         if tmpBox is None:
             continue
         boxesInfo.append({
