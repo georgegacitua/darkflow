@@ -85,13 +85,12 @@ def return_predict(self, im):
     print(out.shape)
     boxes = self.framework.findboxes(out)
     print(boxes)
+    input()
     threshold = self.FLAGS.threshold
     boxesInfo = list()
     for box in boxes:
         tmpBox = self.framework.process_box(box, h, w, threshold)
         print(tmpBox)
-        print(box)
-        input()
         if tmpBox is None:
             continue
         boxesInfo.append({
@@ -105,6 +104,7 @@ def return_predict(self, im):
                 "h": tmpBox[3]},
             "angle": tmpBox[4]
         })
+        print(boxesInfo)
     return boxesInfo
 
 import math
