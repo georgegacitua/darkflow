@@ -6,6 +6,7 @@ from libc.math cimport exp
 from libc.math cimport tanh
 from ..utils.box import BoundBox
 from nms cimport NMS
+from __future__ import print_function
 
 #expit
 @cython.boundscheck(False) # turn off bounds-checking for entire function
@@ -103,5 +104,7 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                         probs[row, col, box_loop, class_loop] = tempc
     
     
-    #NMS                    
+    #NMS
+    print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
+    print(np.ascontiguousarray(probs).reshape(H*W*B,C))
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
