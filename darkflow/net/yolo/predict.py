@@ -61,11 +61,11 @@ def preprocess(self, im, allobj = None):
 			obj_1_ =  obj[1]
 			obj[1] = dims[0] - obj[3]
 			obj[3] = dims[0] - obj_1_
+			obj[5] = obj[5]* -1
 		im = imcv2_recolor(im)
 
 	im = self.resize_input(im)
 	if allobj is None: return im
-	print('Abandon all hope')
 	return im#, np.array(im) # for unit testing
 
 def postprocess(self, net_out, im, save = True):

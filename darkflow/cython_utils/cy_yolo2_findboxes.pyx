@@ -102,7 +102,5 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
     
-    print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
-    print(np.ascontiguousarray(probs).reshape(H*W*B,C))
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
