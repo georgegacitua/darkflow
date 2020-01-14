@@ -45,7 +45,7 @@ for filename in glob.glob(path_1):
             angle = angle + 90
         else:
             angle = angle - 90
-        angle = math.cos(angle)
+        angle = math.cos(angle * math.pi / 180)
 
         x_min = x_cen - max_axis / 2
         x_max = x_cen + max_axis / 2

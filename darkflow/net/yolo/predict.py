@@ -65,6 +65,7 @@ def preprocess(self, im, allobj = None):
 
 	im = self.resize_input(im)
 	if allobj is None: return im
+	print('Abandon all hope')
 	return im#, np.array(im) # for unit testing
 
 def postprocess(self, net_out, im, save = True):
