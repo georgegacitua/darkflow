@@ -71,7 +71,8 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
     H, W, _ = meta['out_size']
     C = meta['classes']
     B = meta['num']
-    
+    print('abandon all hope')
+
     cdef:
         float[:, :, :, ::1] net_out = net_out_in.reshape([H, W, B, net_out_in.shape[2]/B])
         float[:, :, :, ::1] Classes = net_out[:, :, :, 6:]
@@ -101,6 +102,6 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
-    
+
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
