@@ -78,14 +78,12 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
         float[:, :, :, ::1] Classes = net_out[:, :, :, 6:]
         float[:, :, :, ::1] Bbox_pred =  net_out[:, :, :, :6]
         float[:, :, :, ::1] probs = np.zeros((H, W, B, C), dtype=np.float32)
-    print('net out')
-    print(net_out)
+
     print('Classes')
-    print(Classes)
+    print(np.ascontiguousarray(Classes))
     print('Bbox_pred')
-    print(Bbox_pred)
-    print('probs')
-    print(probs)
+    print(np.ascontiguousarray(Bbox_pred))
+
     
     for row in range(H):
         for col in range(W):
@@ -111,6 +109,9 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
 
+    print('probs')
+    print(np.ascontiguousarray(probs).reshape(H*W*B,C))
+    print('Bbox_pred')
     print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
