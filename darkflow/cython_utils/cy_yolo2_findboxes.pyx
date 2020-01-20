@@ -82,7 +82,7 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
     print('Classes')
     print(np.ascontiguousarray(Classes))
     print('Bbox_pred')
-    print(np.ascontiguousarray(Bbox_pred))
+    print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
 
     
     for row in range(H):
@@ -106,9 +106,12 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                 
                 for class_loop in range(C):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
+                    print('tempc')
+                    print(tempc)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
 
+    print('AFTER')
     print('probs')
     print(np.ascontiguousarray(probs).reshape(H*W*B,C))
     print('Bbox_pred')
