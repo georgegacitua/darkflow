@@ -84,7 +84,11 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
             for box_loop in range(B):
                 arr_max=0
                 sum=0;
+                print('objectness pre sigm')
+                print(Bbox_pred[row,col, box_loop,5])
                 Bbox_pred[row, col, box_loop, 5] = expit_c(Bbox_pred[row, col, box_loop, 5])
+                print('objectness post sigm')
+                print(Bbox_pred[row,col, box_loop,5])
                 Bbox_pred[row, col, box_loop, 0] = (col + expit_c(Bbox_pred[row, col, box_loop, 0])) / W
                 Bbox_pred[row, col, box_loop, 1] = (row + expit_c(Bbox_pred[row, col, box_loop, 1])) / H
                 Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * box_loop + 0] / W
@@ -95,13 +99,22 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                     arr_max=max_c(arr_max,Classes[row,col,box_loop,class_loop])
                 
                 for class_loop in range(C):
+                    print('class prob')
+                    print(Classes[row,col,box_loop,class_loop])
                     Classes[row,col,box_loop,class_loop]=exp(Classes[row,col,box_loop,class_loop]-arr_max)
                     sum+=Classes[row,col,box_loop,class_loop]
+                    print('class prob post exp')
+                    print(Classes[row,col,box_loop,class_loop])
                 
                 for class_loop in range(C):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
+                    print('tempc')
+                    print(sum)
+                    print(tempc)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
+
+                input()
 
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
