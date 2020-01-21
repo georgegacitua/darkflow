@@ -114,6 +114,7 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                     print(threshold)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
+                        print('inside if')
                         print(probs[row, col, box_loop, class_loop])
 
                 input()
