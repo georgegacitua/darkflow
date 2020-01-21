@@ -122,6 +122,7 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue
                 if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3], final_bbox[index, 4],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3], final_bbox[index2,4]) >= 0.4:
+                    print('abandon all hope')
                     if final_probs[index2,class_loop] > final_probs[index, class_loop] :
                         final_probs[index, class_loop] =0
                         break
