@@ -71,18 +71,12 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
     H, W, _ = meta['out_size']
     C = meta['classes']
     B = meta['num']
-    print('abandon all hope')
 
     cdef:
         float[:, :, :, ::1] net_out = net_out_in.reshape([H, W, B, net_out_in.shape[2]/B])
         float[:, :, :, ::1] Classes = net_out[:, :, :, 6:]
         float[:, :, :, ::1] Bbox_pred =  net_out[:, :, :, :6]
         float[:, :, :, ::1] probs = np.zeros((H, W, B, C), dtype=np.float32)
-
-    print('Classes')
-    print(np.ascontiguousarray(Classes))
-    print('Bbox_pred')
-    print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
 
     
     for row in range(H):
@@ -106,15 +100,8 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                 
                 for class_loop in range(C):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
-                    print('tempc')
-                    print(tempc)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
 
-    print('AFTER')
-    print('probs')
-    print(np.ascontiguousarray(probs).reshape(H*W*B,C))
-    print('Bbox_pred')
-    print(np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
