@@ -58,13 +58,13 @@ cdef float overlap_down(float y1, float h1 , float w1, float a1, float y2 , floa
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
+cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
     cdef:
         float left, right, up, down, w, h, area
     left = overlap_left(ax, ah, aw, ath, bx, bh, bw, bth)
     right = overlap_right(ax, ah, aw, ath, bx, bh, bw, bth)
-    up = overlap_up(ay, ah, aw, ath, by, bh, bw, bth)
-    down = overlap_left(ay, ah, aw, ath, by, bh, bw, bth)
+    up = overlap_up(ay, ah, aw, ath, b_y, bh, bw, bth)
+    down = overlap_down(ay, ah, aw, ath, b_y, bh, bw, bth)
     w = right - left
     h = down - up
     if w < 0 or h < 0: return 0
@@ -75,19 +75,19 @@ cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath,
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
+cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
     cdef:
         float i,u
-    i = box_intersection_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth)
+    i = box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth)
     u1 = ay - ah*sin(ath) - aw*fabs(cos(ath))
     l1 = ax - aw*fabs(cos(ath)) - ah*sin(ath)
     r1 = ax + aw*fabs(cos(ath)) + ah*sin(ath)
     d1 = ay + ah*sin(ath) + aw*fabs(cos(ath))
     area1 = (r1 - l1)*(d1 - u1)
-    u2 = by - bh*sin(bth) - bw*fabs(cos(bth))
+    u2 = b_y - bh*sin(bth) - bw*fabs(cos(bth))
     l2 = bx - bw*fabs(cos(bth)) - bh*sin(bth)
     r2 = bx + bw*fabs(cos(bth)) + bh*sin(bth)
-    d2 = by + bh*sin(bth) + bw*fabs(cos(bth))
+    d2 = b_y + bh*sin(bth) + bw*fabs(cos(bth))
     area2 = (r2 - l2)*(d2 - u2)
     return area1 + area2 - i;
 
@@ -96,10 +96,10 @@ cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float 
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
-    print(box_intersection_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth))
-    print(box_union_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth))
-    return box_intersection_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth) / box_union_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth);
+cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
+    print(box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth))
+    print(box_union_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth))
+    return box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth) / box_union_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth);
 
 
 
