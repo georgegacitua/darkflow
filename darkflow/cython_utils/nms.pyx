@@ -79,15 +79,15 @@ cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float 
     cdef:
         float i,u
     i = box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth)
-    u1 = ay - ah*sin(ath) - aw*fabs(cos(ath))
-    l1 = ax - aw*fabs(cos(ath)) - ah*sin(ath)
-    r1 = ax + aw*fabs(cos(ath)) + ah*sin(ath)
-    d1 = ay + ah*sin(ath) + aw*fabs(cos(ath))
+    u1 = ay - aw*sin(ath)/2 - ah*fabs(cos(ath))/2
+    l1 = ax - aw*fabs(cos(ath))/2 - ah*sin(ath)/2
+    r1 = ax + aw*fabs(cos(ath))/2 + ah*sin(ath)/2
+    d1 = ay + aw*sin(ath)/2 + ah*fabs(cos(ath))/2
     area1 = (r1 - l1)*(d1 - u1)
-    u2 = b_y - bh*sin(bth) - bw*fabs(cos(bth))
-    l2 = bx - bw*fabs(cos(bth)) - bh*sin(bth)
-    r2 = bx + bw*fabs(cos(bth)) + bh*sin(bth)
-    d2 = b_y + bh*sin(bth) + bw*fabs(cos(bth))
+    u2 = b_y - bw*sin(bth)/2 - bh*fabs(cos(bth))/2
+    l2 = bx - bw*fabs(cos(bth))/2 - bh*sin(bth)/2
+    r2 = bx + bw*fabs(cos(bth))/2 + bh*sin(bth)/2
+    d2 = b_y + bw*sin(bth)/2 + bh*fabs(cos(bth))/2
     area2 = (r2 - l2)*(d2 - u2)
     return area1 + area2 - i;
 
