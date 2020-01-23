@@ -109,7 +109,7 @@ def loss(self, net_out):
     #intersect_botright = tf.minimum(ceil , _botright)
 
     intersect_up = tf.maximum(pred_up, true_up)
-    intersect_right = tf.minimun(pred_right, true_right)
+    intersect_right = tf.minimum(pred_right, true_right)
     intersect_down = tf.minimum(pred_down, true_down)
     intersect_left = tf.maximum(pred_left, true_left)
 
