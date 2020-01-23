@@ -11,7 +11,7 @@ from ..utils.box import BoundBox
 
 
 #OVERLAP
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float overlap_c(float x1, float w1 , float x2 , float w2):
@@ -55,7 +55,7 @@ cdef float overlap_down(float y1, float h1 , float w1, float a1, float y2 , floa
 
 
 #BOX INTERSECTION
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
@@ -72,7 +72,7 @@ cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath,
     return area
 
 #BOX UNION
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
@@ -93,7 +93,7 @@ cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float 
 
 
 #BOX IOU
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
@@ -103,10 +103,11 @@ cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx
 
 
 #NMS
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
+    print(box_iou_c(3,1.5,6,3,0,4.5,3,6,3,90))
     cdef list boxes = list()
     cdef set indices = set()
     cdef:

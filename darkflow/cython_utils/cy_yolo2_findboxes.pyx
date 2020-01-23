@@ -8,7 +8,7 @@ from ..utils.box import BoundBox
 from nms cimport NMS
 
 #expit
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float expit_c(float x):
@@ -16,7 +16,7 @@ cdef float expit_c(float x):
     return y
 
 #tanh
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float tangente(float x):
@@ -24,7 +24,7 @@ cdef float tangente(float x):
     return y
 
 #MAX
-@cython.boundscheck(False) # turn off bounds-checking for entire function
+@cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float max_c(float a, float b):
