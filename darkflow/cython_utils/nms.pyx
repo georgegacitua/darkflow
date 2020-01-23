@@ -65,6 +65,12 @@ cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath,
     right = overlap_right(ax, ah, aw, ath, bx, bh, bw, bth)
     up = overlap_up(ay, ah, aw, ath, b_y, bh, bw, bth)
     down = overlap_down(ay, ah, aw, ath, b_y, bh, bw, bth)
+    print('overlaps')
+    print(left)
+    print(right)
+    print(up)
+    print(down)
+
     w = right - left
     h = down - up
     if w < 0 or h < 0: return 0
@@ -110,7 +116,7 @@ cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx
 @cython.cdivision(True)
 cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     print('iou')
-    print(box_iou_c(3.0,1.5,6.0,3.0,0.0,4.5,3.0,6.0,3.0,1.5708))
+    print(box_iou_c(3.0,1.5,6.0,3.0,0.0,4.5,0.0,6.0,3.0,1.5708))
     input()
     cdef list boxes = list()
     cdef set indices = set()
