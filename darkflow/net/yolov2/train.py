@@ -72,31 +72,34 @@ def loss(self, net_out):
     adjusted_net_out = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_coords_angle, adjusted_c, adjusted_prob], 3)
 
     #Area
-    pred_w = tf.pow(coords[:,:,:,2], 2) * np.reshape([W], [1, 1, 1, 1])
-    pred_h = tf.pow(coords[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1])
+    #pred_w & pred_h is divided by 2
+    pred_w = tf.divide(tf.pow(coords[:,:,:,2], 2) * np.reshape([W], [1, 1, 1, 1]), 2)
+    pred_h = tf.divide(tf.pow(coords[:,:,:,3], 2) * np.reshape([H], [1, 1, 1, 1]), 2)
     #area_pred = wh[:,:,:,0] * wh[:,:,:,1]
     pred_x = coords[:,:,:,0]
     pred_y = coords[:,:,:,1]
     pred_angles = tf.math.acos(coords[:,:,:, 4])
     pred_left = pred_x - tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles))) - tf.multiply(pred_h, tf.math.sin(pred_angles))
     pred_right = pred_x + tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles))) + tf.multiply(pred_h, tf.math.sin(pred_angles))
-    pred_up = pred_y - tf.multiply(pred_h, tf.math.sin(pred_angles)) - tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles)))
-    pred_down = pred_y + tf.multiply(pred_h, tf.math.sin(pred_angles)) + tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles)))
+    pred_up = pred_y - tf.multiply(pred_w, tf.math.sin(pred_angles)) - tf.multiply(pred_h, tf.math.abs(tf.math.cos(pred_angles)))
+    pred_down = pred_y + tf.multiply(pred_w, tf.math.sin(pred_angles)) + tf.multiply(pred_h, tf.math.abs(tf.math.cos(pred_angles)))
     pred_width = tf.maximum(0.0, pred_right - pred_left)
     pred_height = tf.maximum(0.0, pred_down - pred_up)
     pred_areas = tf.multiply(pred_width, pred_height)
     #floor = centers - (wh * .5)
     #ceil  = centers + (wh * .5)
+
     #True Area
-    true_w = tf.pow(_coord[:, :, :, 2], 2) * np.reshape([W], [1, 1, 1, 1])
-    true_h = tf.pow(_coord[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1])
+    #true_w & true_h divided by 2
+    true_w = tf.divide(tf.pow(_coord[:, :, :, 2], 2) * np.reshape([W], [1, 1, 1, 1]), 2)
+    true_h = tf.divide(tf.pow(_coord[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1]), 2)
     true_x = _coord[:, :, :, 0]
     true_y = _coord[:, :, :, 1]
     true_angles = tf.math.acos(_coord[:, :, :, 4])
     true_left = true_x - tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles))) - tf.multiply(true_h, tf.math.sin(true_angles))
     true_right = true_x + tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles))) + tf.multiply(true_h, tf.math.sin(true_angles))
-    true_up = true_y - tf.multiply(true_h, tf.math.sin(true_angles)) - tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles)))
-    true_down = true_y + tf.multiply(true_h, tf.math.sin(true_angles)) + tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles)))
+    true_up = true_y - tf.multiply(true_w, tf.math.sin(true_angles)) - tf.multiply(true_h, tf.math.abs(tf.math.cos(true_angles)))
+    true_down = true_y + tf.multiply(true_w, tf.math.sin(true_angles)) + tf.multiply(true_h, tf.math.abs(tf.math.cos(true_angles)))
     true_width = tf.maximum(0.0, true_right - true_left)
     true_height = tf.maximum(0.0, true_down - true_up)
     true_areas = tf.multiply(true_width, true_height)
@@ -104,14 +107,14 @@ def loss(self, net_out):
     # calculate the intersection areas
     #intersect_upleft   = tf.maximum(floor, _upleft)
     #intersect_botright = tf.minimum(ceil , _botright)
-    intersect_up = tf.maximum(pred_up, true_up)
 
-    intersect_right = tf.maximum(pred_right, true_right)
-    intersect_down = tf.maximum(pred_down, true_down)
+    intersect_up = tf.maximum(pred_up, true_up)
+    intersect_right = tf.minimun(pred_right, true_right)
+    intersect_down = tf.minimum(pred_down, true_down)
     intersect_left = tf.maximum(pred_left, true_left)
 
     intersect_width = tf.maximum(intersect_right - intersect_left, 0.0)
-    intersect_heigtht = tf.maximum(intersect_down- intersect_up, 0.0)
+    intersect_heigtht = tf.maximum(intersect_down - intersect_up, 0.0)
     intersect = tf.multiply(intersect_width, intersect_heigtht)
 
     # calculate the best IOU, set 0.0 confidence for worse boxes
