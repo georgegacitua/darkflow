@@ -26,6 +26,10 @@ def loss(self, net_out):
     B, C = m['num'], m['classes']
     HW = H * W # number of grid cells
     anchors = m['anchors']
+    print('*******************************************************************')
+    print('#########    ACA ESTA TU PRINT   ##################################')
+    print('*******************************************************************')
+    input()
 
     print('{} loss hyper-parameters:'.format(m['model']))
     print('\tH       = {}'.format(H))
