@@ -28,8 +28,8 @@ cdef float overlap_c(float x1, float w1 , float x2 , float w2):
 cdef float overlap_up(float y1, float h1 , float w1, float a1, float y2 , float h2, float w2, float a2):
     cdef:
         float u1, u2
-    u1 = y1 - h1*sin(a1)/2 - w1*fabs(cos(a1))/2
-    u2 = y2 - h2*sin(a2)/2 - w2*fabs(cos(a2))/2
+    u1 = y1 - w1*sin(a1)/2 - h1*fabs(cos(a1))/2
+    u2 = y2 - w2*sin(a2)/2 - h2*fabs(cos(a2))/2
     return max(u1, u2);
 
 cdef float overlap_left(float x1, float h1 , float w1, float a1, float x2 , float h2, float w2, float a2):
@@ -49,8 +49,8 @@ cdef float overlap_right(float x1, float h1 , float w1, float a1, float x2 , flo
 cdef float overlap_down(float y1, float h1 , float w1, float a1, float y2 , float h2, float w2, float a2):
     cdef:
         float d1, d2
-    d1 = y1 + h1*sin(a1)/2 + w1*fabs(cos(a1))/2
-    d2 = y2 + h2*sin(a2)/2 + w2*fabs(cos(a2))/2
+    d1 = y1 + w1*sin(a1)/2 + h1*fabs(cos(a1))/2
+    d2 = y2 + w2*sin(a2)/2 + h2*fabs(cos(a2))/2
     return min(d1, d2)
 
 
@@ -65,12 +65,6 @@ cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath,
     right = overlap_right(ax, ah, aw, ath, bx, bh, bw, bth)
     up = overlap_up(ay, ah, aw, ath, b_y, bh, bw, bth)
     down = overlap_down(ay, ah, aw, ath, b_y, bh, bw, bth)
-    print('overlaps')
-    print(left)
-    print(right)
-    print(up)
-    print(down)
-    input()
     w = right - left
     h = down - up
     if w < 0 or h < 0: return 0
