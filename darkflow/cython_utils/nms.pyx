@@ -97,6 +97,8 @@ cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float 
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx, float by, float bw, float bh, float bth):
+    print(box_intersection_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth))
+    print(box_union_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth))
     return box_intersection_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth) / box_union_c(ax, ay, aw, ah, ath, bx, by, bw, bh, bth);
 
 
