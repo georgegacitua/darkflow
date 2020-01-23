@@ -108,6 +108,7 @@ cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx
 @cython.cdivision(True)
 cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     print('iou')
+    input()
     print(box_iou_c(3,1.5,6,3,0,4.5,3,6,3,90))
     cdef list boxes = list()
     cdef set indices = set()

@@ -117,7 +117,5 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                         print('inside if')
                         print(probs[row, col, box_loop, class_loop])
 
-                input()
-
     #NMS
     return NMS(np.ascontiguousarray(probs).reshape(H*W*B,C), np.ascontiguousarray(Bbox_pred).reshape(H*B*W,6))
