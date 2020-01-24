@@ -96,8 +96,8 @@ def return_predict(self, im):
                 "x": tmpBox[0],
                 "y": tmpBox[1]},
             "axes": {
-                "w": tmpBox[2],
-                "h": tmpBox[3]},
+                "a": tmpBox[2],
+                "b": tmpBox[3]},
             "angle": tmpBox[4]
         })
     return boxesInfo
