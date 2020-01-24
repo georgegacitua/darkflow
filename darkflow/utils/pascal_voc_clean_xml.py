@@ -50,12 +50,13 @@ def pascal_voc_clean_xml(ANN, pick, exclusive = False):
                         continue
 
                 xmlbox = obj.find('bndbox')
-                xn = int(float(xmlbox.find('xmin').text))
-                xx = int(float(xmlbox.find('xmax').text))
-                yn = int(float(xmlbox.find('ymin').text))
-                yx = int(float(xmlbox.find('ymax').text))
+                # MODIFICADO
+                x_cen = int(float(xmlbox.find('xcen').text))
+                a_axis = int(float(xmlbox.find('a').text))
+                y_cen = int(float(xmlbox.find('ycen').text))
+                b_axis = int(float(xmlbox.find('b').text))
                 angle = float(xmlbox.find('angle').text)
-                current = [name,xn,yn,xx,yx, angle]
+                current = [name,x_cen,y_cen,a_axis,b_axis, angle]
                 all += [current]
 
         add = [[jpg, [w, h, all]]]

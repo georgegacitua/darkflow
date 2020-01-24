@@ -31,13 +31,22 @@ def _batch(self, chunk):
     cellx = 1. * w / W
     celly = 1. * h / H
     for obj in allobj:
-        centerx = .5*(obj[1]+obj[3]) #xmin, xmax
-        centery = .5*(obj[2]+obj[4]) #ymin, ymax
+        #centerx = .5*(obj[1]+obj[3]) #xmin, xmax
+        #centery = .5*(obj[2]+obj[4]) #ymin, ymax
+        centerx = obj[1] #Center x ellipse
+        centery = obj[2] #Center y ellipse
+        a = obj[3] #Major axis
+        b = obj[4] #Minor axis
+        angle = obj[5]
         cx = centerx / cellx
         cy = centery / celly
+        #New Bounding box limits
+        lim_x = np.sqrt(np.power(a * np.cos(angle),2) + np.power(b * np.sin(angle),2))
+        lim_y = np.sqrt(np.power(a * np.sin(angle), 2) + np.power(b * np.cos(angle), 2))
+
         if cx >= W or cy >= H: return None, None
-        obj[3] = float(obj[3]-obj[1]) / w
-        obj[4] = float(obj[4]-obj[2]) / h
+        obj[3] = lim_x / w
+        obj[4] = lim_y / h
         obj[3] = np.sqrt(obj[3])
         obj[4] = np.sqrt(obj[4])
         obj[1] = cx - np.floor(cx) # centerx
@@ -51,7 +60,7 @@ def _batch(self, chunk):
     confs = np.zeros([H*W,B])
     coord = np.zeros([H*W,B,5])
     proid = np.zeros([H*W,B,C])
-    prear = np.zeros([H*W,4])
+    prear = np.zeros([H*W,5])
     for obj in allobj:
         print('object:', obj)
         probs[obj[6], :, :] = [[0.]*C] * B
@@ -62,6 +71,7 @@ def _batch(self, chunk):
         prear[obj[6],1] = obj[2] - obj[4]**2 * .5 * H # yup
         prear[obj[6],2] = obj[1] + obj[3]**2 * .5 * W # xright
         prear[obj[6],3] = obj[2] + obj[4]**2 * .5 * H # ybot
+        prear[obj[6],4]  = obj[5]
         confs[obj[6], :] = [1.] * B
 
     # Finalise the placeholders' values

@@ -60,7 +60,7 @@ def loss(self, net_out):
     coords = tf.reshape(coords, [-1, H*W, B, 5])
     adjusted_coords_xy = expit_tensor(coords[:,:,:,0:2])
     adjusted_coords_wh = tf.sqrt(tf.exp(coords[:,:,:,2:4]) * np.reshape(anchors, [1, 1, B, 2]) / np.reshape([W, H], [1, 1, 1, 2]))
-    adjusted_coords_angle = tf.reshape(tf.math.tanh(coords[:,:,:,4]), [-1,H*W,B,1])
+    adjusted_coords_angle = tf.reshape(tf.math.tanh(coords[:,:,:,4]), [-1,H*W,B,1]) #Value between -1 & 1
     coords = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_coords_angle], 3)
 
     adjusted_c = expit_tensor(net_out_reshape[:, :, :, :, 5])
@@ -71,54 +71,28 @@ def loss(self, net_out):
 
     adjusted_net_out = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_coords_angle, adjusted_c, adjusted_prob], 3)
 
-    #Area
-    #pred_w & pred_h is divided by 2
-    pred_w = tf.divide(tf.pow(coords[:,:,:,2], 2) * np.reshape([W], [1, 1, 1, 1]), 2)
-    pred_h = tf.divide(tf.pow(coords[:,:,:,3], 2) * np.reshape([H], [1, 1, 1, 1]), 2)
-    #area_pred = wh[:,:,:,0] * wh[:,:,:,1]
-    pred_x = coords[:,:,:,0]
-    pred_y = coords[:,:,:,1]
-    pred_angles = tf.math.acos(coords[:,:,:, 4])
-    pred_left = pred_x - tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles))) - tf.multiply(pred_h, tf.math.sin(pred_angles))
-    pred_right = pred_x + tf.multiply(pred_w, tf.math.abs(tf.math.cos(pred_angles))) + tf.multiply(pred_h, tf.math.sin(pred_angles))
-    pred_up = pred_y - tf.multiply(pred_w, tf.math.sin(pred_angles)) - tf.multiply(pred_h, tf.math.abs(tf.math.cos(pred_angles)))
-    pred_down = pred_y + tf.multiply(pred_w, tf.math.sin(pred_angles)) + tf.multiply(pred_h, tf.math.abs(tf.math.cos(pred_angles)))
-    pred_width = tf.maximum(0.0, pred_right - pred_left)
-    pred_height = tf.maximum(0.0, pred_down - pred_up)
-    pred_areas = tf.multiply(pred_width, pred_height)
-    #floor = centers - (wh * .5)
-    #ceil  = centers + (wh * .5)
+    #Predicted Bounding Box limits
+    cos_2 = tf.pow(coords[:, :, :, 4], 2)
+    sin_2 = 1 - cos_2
+    w = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
+    h = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
 
-    #True Area
-    #true_w & true_h divided by 2
-    true_w = tf.divide(tf.pow(_coord[:, :, :, 2], 2) * np.reshape([W], [1, 1, 1, 1]), 2)
-    true_h = tf.divide(tf.pow(_coord[:, :, :, 3], 2) * np.reshape([H], [1, 1, 1, 1]), 2)
-    true_x = _coord[:, :, :, 0]
-    true_y = _coord[:, :, :, 1]
-    true_angles = tf.math.acos(_coord[:, :, :, 4])
-    true_left = true_x - tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles))) - tf.multiply(true_h, tf.math.sin(true_angles))
-    true_right = true_x + tf.multiply(true_w, tf.math.abs(tf.math.cos(true_angles))) + tf.multiply(true_h, tf.math.sin(true_angles))
-    true_up = true_y - tf.multiply(true_w, tf.math.sin(true_angles)) - tf.multiply(true_h, tf.math.abs(tf.math.cos(true_angles)))
-    true_down = true_y + tf.multiply(true_w, tf.math.sin(true_angles)) + tf.multiply(true_h, tf.math.abs(tf.math.cos(true_angles)))
-    true_width = tf.maximum(0.0, true_right - true_left)
-    true_height = tf.maximum(0.0, true_down - true_up)
-    true_areas = tf.multiply(true_width, true_height)
+    # wh = tf.pow(coords[:,:,:,2:4], 2) * np.reshape([W, H], [1, 1, 1, 2])
+    wh = tf.pow(tf.stack([w, h], -1), 2) * np.reshape([W, H], [1, 1, 1, 2])
+    area_pred = wh[:, :, :, 0] * wh[:, :, :, 1]
+    centers = coords[:, :, :, 0:2]
+    floor = centers - (wh * .5)
+    ceil = centers + (wh * .5)
 
     # calculate the intersection areas
-    #intersect_upleft   = tf.maximum(floor, _upleft)
-    #intersect_botright = tf.minimum(ceil , _botright)
-
-    intersect_up = tf.maximum(pred_up, true_up)
-    intersect_right = tf.minimum(pred_right, true_right)
-    intersect_down = tf.minimum(pred_down, true_down)
-    intersect_left = tf.maximum(pred_left, true_left)
-
-    intersect_width = tf.maximum(intersect_right - intersect_left, 0.0)
-    intersect_heigtht = tf.maximum(intersect_down - intersect_up, 0.0)
-    intersect = tf.multiply(intersect_width, intersect_heigtht)
+    intersect_upleft = tf.maximum(floor, _upleft)
+    intersect_botright = tf.minimum(ceil, _botright)
+    intersect_wh = intersect_botright - intersect_upleft
+    intersect_wh = tf.maximum(intersect_wh, 0.0)
+    intersect = tf.multiply(intersect_wh[:, :, :, 0], intersect_wh[:, :, :, 1])
 
     # calculate the best IOU, set 0.0 confidence for worse boxes
-    iou = tf.truediv(intersect, true_areas + pred_areas - intersect)
+    iou = tf.truediv(intersect, _areas + area_pred - intersect)
     best_box = tf.equal(iou, tf.reduce_max(iou, [2], True))
     best_box = tf.to_float(best_box)
     confs = tf.multiply(best_box, _confs)

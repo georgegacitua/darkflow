@@ -118,9 +118,13 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     pred_length = final_bbox.shape[0]
     class_length = final_probs.shape[1]
     for class_loop in range(class_length):
+        #agregar equivalente 1
         for index in range(pred_length):
+
             if final_probs[index,class_loop] == 0: continue
+            #agregar equivalente 2
             for index2 in range(index+1,pred_length):
+
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue
                 if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3], final_bbox[index, 4],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3], final_bbox[index2,4]) >= 0.4:
