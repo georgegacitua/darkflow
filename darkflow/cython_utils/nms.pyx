@@ -1,11 +1,7 @@
 import numpy as np
 cimport numpy as np
 cimport cython
-from libc.math cimport exp
-from libc.math cimport acos
-from libc.math cimport cos
-from libc.math cimport sin
-from libc.math cimport fabs
+from libc.math cimport sqrt, pow
 from ..utils.box import BoundBox
 
 
@@ -25,80 +21,40 @@ cdef float overlap_c(float x1, float w1 , float x2 , float w2):
     right = min(r1, r2)
     return right - left;
 
-cdef float overlap_up(float y1, float h1 , float w1, float a1, float y2 , float h2, float w2, float a2):
-    cdef:
-        float u1, u2
-    u1 = y1 - w1*sin(a1)/2 - h1*fabs(cos(a1))/2
-    u2 = y2 - w2*sin(a2)/2 - h2*fabs(cos(a2))/2
-    return max(u1, u2);
-
-cdef float overlap_left(float x1, float h1 , float w1, float a1, float x2 , float h2, float w2, float a2):
-    cdef:
-        float l1, l2
-    l1 = x1 - w1*fabs(cos(a1))/2 - h1*sin(a1)/2
-    l2 = x2 - w2*fabs(cos(a2))/2 - h2*sin(a2)/2
-    return max(l1, l2);
-
-cdef float overlap_right(float x1, float h1 , float w1, float a1, float x2 , float h2, float w2, float a2):
-    cdef:
-        float r1, r2
-    r1 = x1 + w1*fabs(cos(a1))/2 + h1*sin(a1)/2
-    r2 = x2 + w2*fabs(cos(a2))/2 + h2*sin(a2)/2
-    return min(r1, r2)
-
-cdef float overlap_down(float y1, float h1 , float w1, float a1, float y2 , float h2, float w2, float a2):
-    cdef:
-        float d1, d2
-    d1 = y1 + w1*sin(a1)/2 + h1*fabs(cos(a1))/2
-    d2 = y2 + w2*sin(a2)/2 + h2*fabs(cos(a2))/2
-    return min(d1, d2)
-
-
 #BOX INTERSECTION
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
     cdef:
-        float left, right, up, down, w, h, area
-    left = overlap_left(ax, ah, aw, ath, bx, bh, bw, bth)
-    right = overlap_right(ax, ah, aw, ath, bx, bh, bw, bth)
-    up = overlap_up(ay, ah, aw, ath, b_y, bh, bw, bth)
-    down = overlap_down(ay, ah, aw, ath, b_y, bh, bw, bth)
-    w = right - left
-    h = down - up
+        float w,h,area
+    w = overlap_c(ax, aw, bx, bw)
+    h = overlap_c(ay, ah, b_y, bh)
     if w < 0 or h < 0: return 0
     area = w * h
     return area
+
+
 
 #BOX UNION
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_union_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
+cdef float box_union_c(float ax, float ay, float aw, float ah, float bx, float b_y, float bw, float bh):
     cdef:
         float i,u
-    i = box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth)
-    u1 = ay - aw*sin(ath)/2 - ah*fabs(cos(ath))/2
-    l1 = ax - aw*fabs(cos(ath))/2 - ah*sin(ath)/2
-    r1 = ax + aw*fabs(cos(ath))/2 + ah*sin(ath)/2
-    d1 = ay + aw*sin(ath)/2 + ah*fabs(cos(ath))/2
-    area1 = (r1 - l1)*(d1 - u1)
-    u2 = b_y - bw*sin(bth)/2 - bh*fabs(cos(bth))/2
-    l2 = bx - bw*fabs(cos(bth))/2 - bh*sin(bth)/2
-    r2 = bx + bw*fabs(cos(bth))/2 + bh*sin(bth)/2
-    d2 = b_y + bw*sin(bth)/2 + bh*fabs(cos(bth))/2
-    area2 = (r2 - l2)*(d2 - u2)
-    return area1 + area2 - i;
+    i = box_intersection_c(ax, ay, aw, ah, bx, b_y, bw, bh)
+    u = aw * ah + bw * bh - i
+    return u
+
 
 
 #BOX IOU
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
-    return box_intersection_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth) / box_union_c(ax, ay, aw, ah, ath, bx, b_y, bw, bh, bth);
-
+cdef float box_iou_c(float ax, float ay, float aw, float ah, float bx, float b_y, float bw, float bh):
+    return box_intersection_c(ax, ay, aw, ah, bx, b_y, bw, bh) / box_union_c(ax, ay, aw, ah, bx, b_y, bw, bh);
 
 
 
@@ -107,28 +63,33 @@ cdef float box_iou_c(float ax, float ay, float aw, float ah, float ath, float bx
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
-    print('iou')
-    print(box_iou_c(3.0,1.5,6.0,3.0,0.0,4.5,0.0,6.0,3.0,1.5708))
     cdef list boxes = list()
     cdef set indices = set()
     cdef:
         np.intp_t pred_length,class_length,class_loop,index,index2
+        cos_2a, sin_2a, w_a, h_a, cos_2b, sin_2b, w_b, h_b
 
-  
     pred_length = final_bbox.shape[0]
     class_length = final_probs.shape[1]
     for class_loop in range(class_length):
-        #agregar equivalente 1
         for index in range(pred_length):
+            #First equivalency
+            cos_2a = pow(final_bbox[index, 4], 2)
+            sin_2a = 1 - cos_2a
+            w_a = sqrt(pow(final_bbox[index,2], 2) * cos_2a + pow(final_bbox[index,3], 2) * sin_2a)
+            h_a = sqrt(pow(final_bbox[index,2], 2) * sin_2a + pow(final_bbox[index,3], 2) * cos_2a)
 
             if final_probs[index,class_loop] == 0: continue
-            #agregar equivalente 2
             for index2 in range(index+1,pred_length):
+                #Second equivalency
+                cos_2b = pow(final_bbox[index2, 4], 2)
+                sin_2b = 1 - cos_2b
+                w_b = sqrt(pow(final_bbox[index2,2], 2) * cos_2b + pow(final_bbox[index2,3], 2) * sin_2b)
+                h_b = sqrt(pow(final_bbox[index2,2], 2) * sin_2b + pow(final_bbox[index2,3], 2) * cos_2b)
 
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue
-                if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3], final_bbox[index, 4],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3], final_bbox[index2,4]) >= 0.4:
-                    print('abandon all hope')
+                if box_iou_c(final_bbox[index,0],final_bbox[index,1],w_a, h_b,final_bbox[index2,0],final_bbox[index2,1],w_b,h_b) >= 0.2: #0.4
                     if final_probs[index2,class_loop] > final_probs[index, class_loop] :
                         final_probs[index, class_loop] =0
                         break

@@ -37,7 +37,11 @@ def _batch(self, chunk):
         centery = obj[2] #Center y ellipse
         a = obj[3] #Major axis
         b = obj[4] #Minor axis
-        angle = obj[5]
+        angle = obj[5] #Angle
+        #Normalize angle
+        a_cos = a * np.cos(angle)/w
+        b_sin = b * np.sin(angle)/h
+        angle = np.arctan2(b_sin, a_cos)
         cx = centerx / cellx
         cy = centery / celly
         #New Bounding box limits
@@ -45,8 +49,10 @@ def _batch(self, chunk):
         lim_y = np.sqrt(np.power(a * np.sin(angle), 2) + np.power(b * np.cos(angle), 2))
 
         if cx >= W or cy >= H: return None, None
+        #Modified objects
         obj[3] = lim_x / w
         obj[4] = lim_y / h
+        obj[5] = np.cos(angle)
         obj[3] = np.sqrt(obj[3])
         obj[4] = np.sqrt(obj[4])
         obj[1] = cx - np.floor(cx) # centerx
@@ -71,7 +77,7 @@ def _batch(self, chunk):
         prear[obj[6],1] = obj[2] - obj[4]**2 * .5 * H # yup
         prear[obj[6],2] = obj[1] + obj[3]**2 * .5 * W # xright
         prear[obj[6],3] = obj[2] + obj[4]**2 * .5 * H # ybot
-        prear[obj[6],4]  = obj[5]
+        prear[obj[6],4]  = obj[5] #cos angle
         confs[obj[6], :] = [1.] * B
 
     # Finalise the placeholders' values
