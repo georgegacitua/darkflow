@@ -100,8 +100,8 @@ def loss(self, net_out):
 
     # take care of the weight terms
     conid = snoob * (1. - confs) + sconf * confs
-    #weight_coo = tf.concat(5 * [tf.expand_dims(confs, -1)], 4)
-    weight_coo = tf.concat(4 * [tf.expand_dims(confs, -1)], 3)
+    weight_coo = tf.concat(5 * [tf.expand_dims(confs, -1)], 3)
+    #weight_coo = tf.concat(4 * [tf.expand_dims(confs, -1)], 3)
     cooid = scoor * weight_coo
     weight_pro = tf.concat(C * [tf.expand_dims(confs, -1)], 3)
     proid = sprob * weight_pro
