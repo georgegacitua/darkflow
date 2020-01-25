@@ -25,7 +25,7 @@ cdef float overlap_c(float x1, float w1 , float x2 , float w2):
 @cython.boundscheck(True) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
-cdef float box_intersection_c(float ax, float ay, float aw, float ah, float ath, float bx, float b_y, float bw, float bh, float bth):
+cdef float box_intersection_c(float ax, float ay, float aw, float ah, float bx, float b_y, float bw, float bh):
     cdef:
         float w,h,area
     w = overlap_c(ax, aw, bx, bw)
