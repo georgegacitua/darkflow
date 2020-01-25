@@ -2,10 +2,10 @@ import os
 import math
 import glob
 import xml.etree.ElementTree as ET
-
-w, h = (311,194)
+from PIL import Image
 
 path_1 = '/Users/george/Documents/GitKraken/input_cropped/labels/*'
+path_2 = '/Users/george/Documents/GitKraken/input_cropped/train_images/'
 img_path = '/content/gdrive/My Drive/Rocky-YOLO/input_cropped/train_images/'
 #Scan labels folder
 for filename in glob.glob(path_1):
@@ -13,6 +13,10 @@ for filename in glob.glob(path_1):
     only_name = folders[-1].split('.')
     only_name = only_name[0]
     only_name = only_name[0:-3]
+
+    #Get image dimensions
+    img = Image.open(path_2 + only_name + '.png')
+    w,h = img.size
 
     #XML Tree
     annotation = ET.Element('annotation')
