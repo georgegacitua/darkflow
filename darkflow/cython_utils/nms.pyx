@@ -76,20 +76,20 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
             #First equivalency
             cos_2a = pow(final_bbox[index, 4], 2)
             sin_2a = 1 - cos_2a
-            w_a = sqrt(pow(final_bbox[index,2], 2) * cos_2a + pow(final_bbox[index,3], 2) * sin_2a)
-            h_a = sqrt(pow(final_bbox[index,2], 2) * sin_2a + pow(final_bbox[index,3], 2) * cos_2a)
+            final_bbox[index,2] = sqrt(pow(final_bbox[index,2], 2) * cos_2a + pow(final_bbox[index,3], 2) * sin_2a)
+            final_bbox[index,3] = sqrt(pow(final_bbox[index,2], 2) * sin_2a + pow(final_bbox[index,3], 2) * cos_2a)
 
             if final_probs[index,class_loop] == 0: continue
             for index2 in range(index+1,pred_length):
                 #Second equivalency
                 cos_2b = pow(final_bbox[index2, 4], 2)
                 sin_2b = 1 - cos_2b
-                w_b = sqrt(pow(final_bbox[index2,2], 2) * cos_2b + pow(final_bbox[index2,3], 2) * sin_2b)
-                h_b = sqrt(pow(final_bbox[index2,2], 2) * sin_2b + pow(final_bbox[index2,3], 2) * cos_2b)
+                final_bbox[index2,2] = sqrt(pow(final_bbox[index2,2], 2) * cos_2b + pow(final_bbox[index2,3], 2) * sin_2b)
+                final_bbox[index2,3] = sqrt(pow(final_bbox[index2,2], 2) * sin_2b + pow(final_bbox[index2,3], 2) * cos_2b)
 
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue
-                if box_iou_c(final_bbox[index,0],final_bbox[index,1],w_a, h_b,final_bbox[index2,0],final_bbox[index2,1],w_b,h_b) >= 0.2: #0.4
+                if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3]) >= 0.1: #0.4
                     if final_probs[index2,class_loop] > final_probs[index, class_loop] :
                         final_probs[index, class_loop] =0
                         break
@@ -99,8 +99,8 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
                 bb=BoundBox(class_length)
                 bb.x = final_bbox[index, 0]
                 bb.y = final_bbox[index, 1]
-                bb.w = w_a
-                bb.h = h_a
+                bb.a = final_bbox[index, 2]
+                bb.b = final_bbox[index, 3]
                 bb.th = final_bbox[index, 4]
                 bb.c = final_bbox[index, 5]
                 bb.probs = np.asarray(final_probs[index,:])

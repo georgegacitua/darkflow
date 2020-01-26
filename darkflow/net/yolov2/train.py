@@ -60,7 +60,7 @@ def loss(self, net_out):
     coords = tf.reshape(coords, [-1, H*W, B, 5])
     adjusted_coords_xy = expit_tensor(coords[:,:,:,0:2])
     adjusted_coords_wh = tf.sqrt(tf.exp(coords[:,:,:,2:4]) * np.reshape(anchors, [1, 1, B, 2]) / np.reshape([W, H], [1, 1, 1, 2]))
-    adjusted_coords_angle = tf.reshape(tf.math.tanh(coords[:,:,:,4]), [-1,H*W,B,1]) #Value between -1 & 1
+    adjusted_coords_angle = tf.reshape(tf.tanh(coords[:,:,:,4]), [-1,H*W,B,1]) #Value between -1 & 1
     coords = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_coords_angle], 3)
 
     adjusted_c = expit_tensor(net_out_reshape[:, :, :, :, 5])
@@ -100,14 +100,14 @@ def loss(self, net_out):
 
     # take care of the weight terms
     conid = snoob * (1. - confs) + sconf * confs
-    weight_coo = tf.concat(5 * [tf.expand_dims(confs, -1)], 3)
     #weight_coo = tf.concat(4 * [tf.expand_dims(confs, -1)], 3)
+    weight_coo = tf.concat(5 * [tf.expand_dims(confs, -1)], 3)
     cooid = scoor * weight_coo
     weight_pro = tf.concat(C * [tf.expand_dims(confs, -1)], 3)
     proid = sprob * weight_pro
 
     self.fetch += [_probs, confs, conid, cooid, proid]
-    confs = tf.reshape(confs, [-1, H*W, B])
+    #confs = tf.reshape(confs, [-1, H*W, B])
     true = tf.concat([_coord, tf.expand_dims(confs, 3), _probs ], 3)
     wght = tf.concat([cooid, tf.expand_dims(conid, 3), proid], 3)
     #wght = tf.concat([cooid, tf.expand_dims(conid, 4), proid ], 4)

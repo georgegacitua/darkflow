@@ -8,7 +8,7 @@ from ..utils.box import BoundBox
 from nms cimport NMS
 
 #expit
-@cython.boundscheck(True) # turn off bounds-checking for entire function
+@cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float expit_c(float x):
@@ -16,15 +16,15 @@ cdef float expit_c(float x):
     return y
 
 #tanh
-@cython.boundscheck(True) # turn off bounds-checking for entire function
-@cython.wraparound(False)  # turn off negative index wrapping for entire function
-@cython.cdivision(True)
-cdef float tangente(float x):
-    cdef float y= tanh(x)
-    return y
+#@cython.boundscheck(True) # turn off bounds-checking for entire function
+#@cython.wraparound(False)  # turn off negative index wrapping for entire function
+#@cython.cdivision(True)
+#cdef float tangente(float x):
+#    cdef float y= tanh(x)
+#    return y
 
 #MAX
-@cython.boundscheck(True) # turn off bounds-checking for entire function
+@cython.boundscheck(False) # turn off bounds-checking for entire function
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 @cython.cdivision(True)
 cdef float max_c(float a, float b):
@@ -93,7 +93,7 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
                 Bbox_pred[row, col, box_loop, 1] = (row + expit_c(Bbox_pred[row, col, box_loop, 1])) / H
                 Bbox_pred[row, col, box_loop, 2] = exp(Bbox_pred[row, col, box_loop, 2]) * anchors[2 * box_loop + 0] / W
                 Bbox_pred[row, col, box_loop, 3] = exp(Bbox_pred[row, col, box_loop, 3]) * anchors[2 * box_loop + 1] / H
-                Bbox_pred[row, col, box_loop, 4] = tangente(Bbox_pred[row, col, box_loop, 4]) #angle
+                Bbox_pred[row, col, box_loop, 4] = tanh(Bbox_pred[row, col, box_loop, 4]) #angle
                 #SOFTMAX BLOCK, no more pointer juggling
                 for class_loop in range(C):
                     arr_max=max_c(arr_max,Classes[row,col,box_loop,class_loop])
@@ -104,8 +104,6 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
 
                 for class_loop in range(C):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
-                    print('tempc:')
-                    print(tempc)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
 
