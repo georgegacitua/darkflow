@@ -99,8 +99,8 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
                 bb=BoundBox(class_length)
                 bb.x = final_bbox[index, 0]
                 bb.y = final_bbox[index, 1]
-                bb.w = final_bbox[index, 2]
-                bb.h = final_bbox[index, 3]
+                bb.w = w_a
+                bb.h = h_a
                 bb.th = final_bbox[index, 4]
                 bb.c = final_bbox[index, 5]
                 bb.probs = np.asarray(final_probs[index,:])
