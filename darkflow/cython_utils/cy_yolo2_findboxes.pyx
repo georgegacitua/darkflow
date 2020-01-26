@@ -78,6 +78,8 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
         float[:, :, :, ::1] Bbox_pred =  net_out[:, :, :, :6]
         float[:, :, :, ::1] probs = np.zeros((H, W, B, C), dtype=np.float32)
 
+    print('Bbox pred')
+    print(Bbox_pred)
     
     for row in range(H):
         for col in range(W):
@@ -100,6 +102,9 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
 
                 for class_loop in range(C):
                     tempc = Classes[row, col, box_loop, class_loop] * Bbox_pred[row, col, box_loop, 5]/sum
+
+                    print('tempc:')
+                    print(tempc)
                     if(tempc > threshold):
                         probs[row, col, box_loop, class_loop] = tempc
 
