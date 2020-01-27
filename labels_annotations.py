@@ -47,7 +47,7 @@ for filename in glob.glob(path_1):
         a = float(var[2])
         b = float(var[3])
         angle = float(var[4])
-        angle = angle * math.pi/180
+        angle = angle * math.pi / 180
 
         object = ET.SubElement(annotation, 'object')
         name = ET.SubElement(object, 'name')
@@ -72,7 +72,7 @@ for filename in glob.glob(path_1):
         ang.text = str(angle)
 
     xmltext = ET.tostring(annotation, encoding='unicode')
-    xmlfile = open('/Users/george/Documents/GitKraken/input_cropped/annotations/' + only_name + '_gt.xml', 'w')
+    xmlfile = open('/Users/george/Documents/GitKraken/input_cropped/annotations/' + only_name + '.xml', 'w')
     xmlfile.write(xmltext)
     xmlfile.close()
     file.close()

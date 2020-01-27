@@ -1,7 +1,9 @@
 import numpy as np
 cimport numpy as np
 cimport cython
-from libc.math cimport sqrt, pow, cos, sin
+from libc.math cimport sqrt
+from libc.math cimport cos
+from libc.math cimport sin
 from ..utils.box import BoundBox
 
 
@@ -74,24 +76,30 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     for class_loop in range(class_length):
         for index in range(pred_length):
             #First equivalency
-            angle = final_bbox[index, 4]
-            cos_2a = pow(cos(angle), 2)
-            sin_2a = 1 - cos_2a
-            final_bbox[index,2] = sqrt(pow(final_bbox[index,2], 2) * cos_2a + pow(final_bbox[index,3], 2) * sin_2a)
-            final_bbox[index,3] = sqrt(pow(final_bbox[index,2], 2) * sin_2a + pow(final_bbox[index,3], 2) * cos_2a)
+            angle_1 = final_bbox[index, 4]
+            print('a:')
+            print(final_bbox[index,2])
+            print('b:')
+            print(final_bbox[index,3])
+
+            final_bbox[index,2] = sqrt(final_bbox[index,2] * final_bbox[index,2] * cos(angle_1) * cos(angle_1) + final_bbox[index,3] * final_bbox[index,3] * sin(angle_1) * sin(angle_1))
+            final_bbox[index,3] = sqrt(final_bbox[index,2] * final_bbox[index,2] * sin(angle_1) * sin(angle_1) + final_bbox[index,3] * final_bbox[index,3] * cos(angle_1) * cos(angle_1))
 
             if final_probs[index,class_loop] == 0: continue
             for index2 in range(index+1,pred_length):
                 #Second equivalency
-                angle2 = final_bbox[index2,4]
-                cos_2b = pow(angle2, 2)
-                sin_2b = 1 - cos_2b
-                final_bbox[index2,2] = sqrt(pow(final_bbox[index2,2], 2) * cos_2b + pow(final_bbox[index2,3], 2) * sin_2b)
-                final_bbox[index2,3] = sqrt(pow(final_bbox[index2,2], 2) * sin_2b + pow(final_bbox[index2,3], 2) * cos_2b)
+                angle_2 = final_bbox[index2, 4]
+                print('a2:')
+                print(final_bbox[index2,2])
+                print('b2:')
+                print(final_bbox[index2,3])
+
+                final_bbox[index2,2] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * cos(angle_2) * cos(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * sin(angle_2) * sin(angle_2))
+                final_bbox[index2,3] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * sin(angle_2) * sin(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * cos(angle_2) * cos(angle_2))
 
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue
-                if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3]) >= 0.1: #0.4
+                if box_iou_c(final_bbox[index,0],final_bbox[index,1],final_bbox[index,2],final_bbox[index,3],final_bbox[index2,0],final_bbox[index2,1],final_bbox[index2,2],final_bbox[index2,3]) >= 0.2: #0.4
                     if final_probs[index2,class_loop] > final_probs[index, class_loop] :
                         final_probs[index, class_loop] =0
                         break
