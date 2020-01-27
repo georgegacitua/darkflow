@@ -1,7 +1,7 @@
 import numpy as np
 cimport numpy as np
 cimport cython
-from libc.math cimport sqrt, pow
+from libc.math cimport sqrt, pow, cos, sin
 from ..utils.box import BoundBox
 
 
@@ -74,7 +74,8 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     for class_loop in range(class_length):
         for index in range(pred_length):
             #First equivalency
-            cos_2a = pow(final_bbox[index, 4], 2)
+            angle = final_bbox[index, 4]
+            cos_2a = pow(cos(angle), 2)
             sin_2a = 1 - cos_2a
             final_bbox[index,2] = sqrt(pow(final_bbox[index,2], 2) * cos_2a + pow(final_bbox[index,3], 2) * sin_2a)
             final_bbox[index,3] = sqrt(pow(final_bbox[index,2], 2) * sin_2a + pow(final_bbox[index,3], 2) * cos_2a)
@@ -82,7 +83,8 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
             if final_probs[index,class_loop] == 0: continue
             for index2 in range(index+1,pred_length):
                 #Second equivalency
-                cos_2b = pow(final_bbox[index2, 4], 2)
+                angle2 = final_bbox[index2,4]
+                cos_2b = pow(angle2, 2)
                 sin_2b = 1 - cos_2b
                 final_bbox[index2,2] = sqrt(pow(final_bbox[index2,2], 2) * cos_2b + pow(final_bbox[index2,3], 2) * sin_2b)
                 final_bbox[index2,3] = sqrt(pow(final_bbox[index2,2], 2) * sin_2b + pow(final_bbox[index2,3], 2) * cos_2b)

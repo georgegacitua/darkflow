@@ -27,7 +27,7 @@ def process_box(self, b, h, w, threshold):
 	if max_prob > threshold:
 
 		mess = '{}'.format(label)
-		return (int(b.x * w), int(b.y * h), int(b.a * w), int(b.b * h), np.arccos(b.th), mess, max_indx, max_prob)
+		return (int(b.x * w), int(b.y * h), int(b.a * w), int(b.b * h), np.arccos(b.th) * 180 / np.pi, mess, max_indx, max_prob)
 	return None
 
 def findboxes(self, net_out):
