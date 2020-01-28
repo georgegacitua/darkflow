@@ -45,8 +45,10 @@ def _batch(self, chunk):
         cx = centerx / cellx
         cy = centery / celly
         #New Bounding box limits
-        lim_x = np.sqrt(np.power(a * np.cos(angle),2) + np.power(b * np.sin(angle),2))
-        lim_y = np.sqrt(np.power(a * np.sin(angle), 2) + np.power(b * np.cos(angle), 2))
+        #lim_x = np.sqrt(np.power(a * np.cos(angle),2) + np.power(b * np.sin(angle),2))
+        lim_x = 2 * np.sqrt(np.power(a * np.cos(angle), 2) + np.power(b * np.sin(angle), 2))
+        #lim_y = np.sqrt(np.power(a * np.sin(angle), 2) + np.power(b * np.cos(angle), 2))
+        lim_y = 2 * np.sqrt(np.power(a * np.sin(angle), 2) + np.power(b * np.cos(angle), 2))
 
         if cx >= W or cy >= H: return None, None
         #Modified objects

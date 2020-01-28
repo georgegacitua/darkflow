@@ -76,26 +76,26 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     for class_loop in range(class_length):
         for index in range(pred_length):
             #First equivalency
-            angle_1 = final_bbox[index, 4]
-            print('a:')
-            print(final_bbox[index,2])
-            print('b:')
-            print(final_bbox[index,3])
+            cos_2_angle_1 = final_bbox[index, 4] * final_bbox[index, 4]
+            sin_2_angle_1 = 1 - cos_2_angle_1
+            #angle_1 = final_bbox[index, 4]
 
-            final_bbox[index,2] = sqrt(final_bbox[index,2] * final_bbox[index,2] * cos(angle_1) * cos(angle_1) + final_bbox[index,3] * final_bbox[index,3] * sin(angle_1) * sin(angle_1))
-            final_bbox[index,3] = sqrt(final_bbox[index,2] * final_bbox[index,2] * sin(angle_1) * sin(angle_1) + final_bbox[index,3] * final_bbox[index,3] * cos(angle_1) * cos(angle_1))
+            #final_bbox[index,2] = sqrt(final_bbox[index,2] * final_bbox[index,2] * cos(angle_1) * cos(angle_1) + final_bbox[index,3] * final_bbox[index,3] * sin(angle_1) * sin(angle_1))
+            final_bbox[index,2] = 2 * sqrt(final_bbox[index,2] * final_bbox[index,2] * cos_2_angle_1 + final_bbox[index,3] * final_bbox[index,3] * sin_2_angle_1)
+            #final_bbox[index,3] = sqrt(final_bbox[index,2] * final_bbox[index,2] * sin(angle_1) * sin(angle_1) + final_bbox[index,3] * final_bbox[index,3] * cos(angle_1) * cos(angle_1))
+            final_bbox[index,3] = 2 * sqrt(final_bbox[index,2] * final_bbox[index,2] * sin_2_angle_1 + final_bbox[index,3] * final_bbox[index,3] * cos_2_angle_1)
 
             if final_probs[index,class_loop] == 0: continue
             for index2 in range(index+1,pred_length):
                 #Second equivalency
-                angle_2 = final_bbox[index2, 4]
-                print('a2:')
-                print(final_bbox[index2,2])
-                print('b2:')
-                print(final_bbox[index2,3])
+                cos_2_angle_2 = final_bbox[index2, 4] * final_bbox[index2, 4]
+                sin_2_angle_2 = 1 - cos_2_angle_2
+                #angle_2 = final_bbox[index2, 4]
 
-                final_bbox[index2,2] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * cos(angle_2) * cos(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * sin(angle_2) * sin(angle_2))
-                final_bbox[index2,3] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * sin(angle_2) * sin(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * cos(angle_2) * cos(angle_2))
+                #final_bbox[index2,2] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * cos(angle_2) * cos(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * sin(angle_2) * sin(angle_2))
+                final_bbox[index2,2] = 2 * sqrt(final_bbox[index2,2] * final_bbox[index2,2] * cos_2_angle_2 + final_bbox[index2,3] * final_bbox[index2,3] * sin_2_angle_2)
+                #final_bbox[index2,3] = sqrt(final_bbox[index2,2] * final_bbox[index2,2] * sin(angle_2) * sin(angle_2) + final_bbox[index2,3] * final_bbox[index2,3] * cos(angle_2) * cos(angle_2))
+                final_bbox[index2,3] = 2 * sqrt(final_bbox[index2,2] * final_bbox[index2,2] * sin_2_angle_2 + final_bbox[index2,3] * final_bbox[index2,3] * cos_2_angle_2)
 
                 if final_probs[index2,class_loop] == 0: continue
                 if index==index2 : continue

@@ -74,8 +74,10 @@ def loss(self, net_out):
     #Predicted Bounding Box limits
     cos_2 = tf.pow(coords[:, :, :, 4], 2)
     sin_2 = 1 - cos_2
-    w = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
-    h = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
+    #w = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
+    w = 2 * tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
+    #h = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
+    h = 2 * tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
 
     # wh = tf.pow(coords[:,:,:,2:4], 2) * np.reshape([W, H], [1, 1, 1, 2])
     wh = tf.pow(tf.stack([w, h], -1), 2) * np.reshape([W, H], [1, 1, 1, 2])
@@ -100,18 +102,14 @@ def loss(self, net_out):
 
     # take care of the weight terms
     conid = snoob * (1. - confs) + sconf * confs
-    #weight_coo = tf.concat(4 * [tf.expand_dims(confs, -1)], 3)
     weight_coo = tf.concat(5 * [tf.expand_dims(confs, -1)], 3)
     cooid = scoor * weight_coo
     weight_pro = tf.concat(C * [tf.expand_dims(confs, -1)], 3)
     proid = sprob * weight_pro
 
     self.fetch += [_probs, confs, conid, cooid, proid]
-    #confs = tf.reshape(confs, [-1, H*W, B])
     true = tf.concat([_coord, tf.expand_dims(confs, 3), _probs ], 3)
     wght = tf.concat([cooid, tf.expand_dims(conid, 3), proid], 3)
-    #wght = tf.concat([cooid, tf.expand_dims(conid, 4), proid ], 4)
-    #wght = tf.reshape(wght, [-1, H*W, B, 6 + C])
 
     print('Building {} loss'.format(m['model']))
     loss = tf.pow(adjusted_net_out - true, 2)
