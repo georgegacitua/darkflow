@@ -74,10 +74,8 @@ def loss(self, net_out):
     #Predicted Bounding Box limits
     cos_2 = tf.pow(coords[:, :, :, 4], 2)
     sin_2 = 1 - cos_2
-    #w = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
-    w = 2 * tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
-    #h = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
-    h = 2 * tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
+    w = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * cos_2 + tf.pow(coords[:, :, :, 3], 2) * sin_2)
+    h = tf.sqrt(tf.pow(coords[:, :, :, 2], 2) * sin_2 + tf.pow(coords[:, :, :, 3], 2) * cos_2)
 
     # wh = tf.pow(coords[:,:,:,2:4], 2) * np.reshape([W, H], [1, 1, 1, 2])
     wh = tf.pow(tf.stack([w, h], -1), 2) * np.reshape([W, H], [1, 1, 1, 2])
