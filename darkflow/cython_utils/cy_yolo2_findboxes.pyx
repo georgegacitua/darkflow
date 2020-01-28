@@ -78,10 +78,6 @@ def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
         float[:, :, :, ::1] Bbox_pred =  net_out[:, :, :, :6]
         float[:, :, :, ::1] probs = np.zeros((H, W, B, C), dtype=np.float32)
 
-    print('Bbox pred')
-    print(Bbox_pred[row, col, box_loop, 5])
-    print('Clases')
-    print(np.ascontiguousarray(Classes))
     
     for row in range(H):
         for col in range(W):

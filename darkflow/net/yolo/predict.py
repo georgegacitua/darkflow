@@ -27,6 +27,11 @@ def process_box(self, b, h, w, threshold):
 	if max_prob > threshold:
 
 		mess = '{}'.format(label)
+		print('x pred:', int(b.x * w))
+		print('y pred:', int(b.y * h))
+		print('a pred:', int(b.a * w))
+		print('b pred:', int(b.b * h))
+		print('theta pred:', np.arccos(b.th) * 180 / np.pi)
 		return (int(b.x * w), int(b.y * h), int(b.a * w), int(b.b * h), np.arccos(b.th) * 180 / np.pi, mess, max_indx, max_prob)
 	return None
 
