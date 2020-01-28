@@ -76,6 +76,8 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
     for class_loop in range(class_length):
         for index in range(pred_length):
             #First equivalency
+            print('final box')
+            print(final_bbox[index, 4])
             cos_2_angle_1 = final_bbox[index, 4] * final_bbox[index, 4]
             sin_2_angle_1 = 1 - cos_2_angle_1
             #angle_1 = final_bbox[index, 4]
