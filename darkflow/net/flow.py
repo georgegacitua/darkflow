@@ -36,6 +36,9 @@ def train(self):
     batches = self.framework.shuffle()
     loss_op = self.framework.loss
 
+    loss_list = list()
+    loss_mva_list =list()
+
     for i, (x_batch, datum) in enumerate(batches):
         if not i: self.say(train_stats.format(
             self.FLAGS.lr, self.FLAGS.batch,
@@ -70,8 +73,11 @@ def train(self):
         ckpt = (i+1) % (self.FLAGS.save // self.FLAGS.batch)
         args = [step_now, profile]
         if not ckpt: _save_ckpt(self, *args)
+        loss_list.append(loss)
+        loss_mva_list.append(loss_mva)
 
     if ckpt: _save_ckpt(self, *args)
+    return loss_list,loss_mva_list
 
 def return_predict(self, im):
     assert isinstance(im, np.ndarray), \
