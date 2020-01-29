@@ -52,9 +52,9 @@ def pascal_voc_clean_xml(ANN, pick, exclusive = False):
                 xmlbox = obj.find('bndbox')
                 # MODIFICADO
                 x_cen = int(float(xmlbox.find('xcen').text))
-                a_axis = int(float(xmlbox.find('a').text))
+                a_axis = 2 * int(float(xmlbox.find('a').text))
                 y_cen = int(float(xmlbox.find('ycen').text))
-                b_axis = int(float(xmlbox.find('b').text))
+                b_axis = 2 * int(float(xmlbox.find('b').text))
                 angle = float(xmlbox.find('angle').text)
                 current = [name,x_cen,y_cen,a_axis,b_axis, angle]
                 all += [current]
