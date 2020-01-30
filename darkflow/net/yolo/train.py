@@ -19,9 +19,6 @@ def loss(self, net_out):
     scoor = float(m['coord_scale'])
     S, B, C = m['side'], m['num'], m['classes']
     SS = S * S # number of grid cells
-    print('*******************************************************************')
-    print('#########    TUS SUPLICAS FUERON ESCUCHADAS   ##################################')
-    print('*******************************************************************')
 
     print('{} loss hyper-parameters:'.format(m['model']))
     print('\tside    = {}'.format(m['side']))
